@@ -146,7 +146,6 @@ class MahasiswaController extends Controller
         $keyword = $request->search;
         $mahasiswa = Mahasiswa::where('nim', 'LIKE','%'.$keyword.'%')
                                 ->orWhere('nama', 'LIKE','%'.$keyword.'%')
-                                ->orWhere('email', 'LIKE','%'.$keyword.'%')
                                 ->paginate(4);
         return view('mahasiswa.pagination', compact('mahasiswa'))->with('i', (request()->input('page', 1) - 1) * 4);
     }
