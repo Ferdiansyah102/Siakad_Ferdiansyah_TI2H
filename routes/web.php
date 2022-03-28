@@ -18,3 +18,5 @@ use App\Http\Controllers\MahasiswaController;
 //     return view('welcome');
 // });
 Route::resource('mahasiswa', MahasiswaController::class);
+Route::get('page', [MahasiswaController::class, 'page']);
+Route::get('search', [MahasiswaController::class, 'search']);
