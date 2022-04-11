@@ -6,6 +6,7 @@ use Illuminate\Http\Request;
 use App\Models\Mahasiswa;
 use Illuminate\Support\Facades\DB;
 use App\Models\Kelas;
+use App\Models\Mahasiswa_MataKuliah;
 
 class MahasiswaController extends Controller
 {
@@ -162,5 +163,16 @@ class MahasiswaController extends Controller
                                 ->orWhere('nama', 'LIKE','%'.$keyword.'%')
                                 ->paginate(4);
         return view('mahasiswa.pagination', compact('mahasiswa'))->with('i', (request()->input('page', 1) - 1) * 4);
+    }
+
+    public function khs($nim){
+        $mhs = Mahasiswa::where('nim', $nim)->first();
+        $nilai = mahasiswa_matakuliah::where('mahasiswa_id', $mhs->id_mahasiswa)
+                                       ->with('matakuliah')
+                                       ->with('mahasiswa')
+                                       ->get();
+        $nilai->mahasiswa = Mahasiswa::with('kelas')->where('nim', $nim)->first();
+
+        return view('mahasiswa.khs', compact('nilai'));
     }
 }
