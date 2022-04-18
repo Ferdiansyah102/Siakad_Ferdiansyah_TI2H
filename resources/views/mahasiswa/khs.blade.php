@@ -12,6 +12,7 @@
 </div>
 
 <div class="container">
+  <a style="float: right" href="/mahasiswa/nilai/{{ $nilai->mahasiswa->nim }}/pdf" target="_blank" class="btn btn-success">Cetak KHS</a>
   <p><b>Nama : </b> {{ $nilai->mahasiswa->nama }}</p>
   <p><b>NIM : </b> {{ $nilai->mahasiswa->nim }}</p>
   <p><b>Kelas : </b> {{ $nilai->mahasiswa->kelas->nama_kelas }}</p>

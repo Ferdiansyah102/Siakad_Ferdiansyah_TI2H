@@ -5,6 +5,13 @@
         <div class="pull-left mt-2">
             <h2>JURUSAN TEKNOLOGI INFORMASI-POLITEKNIK NEGERI MALANG</h2>
         </div>
+        <form class="form float-left" method="get" action="/search">
+            <div class="form-group">
+                {{-- <label for="search" class="d-block mr-2">Cari</label> --}}
+                <input type="text" name="search" class="form-control w-75 d-inline" value="{{ old('search') }}" id="search" placeholder="Kata Kunci">
+                <button type="submit" class="btn btn-primary mb-1">Cari</button>
+            </div>
+          </form>
         <div class="float-right my-2">
             <a class="btn btn-success" href="{{ route('mahasiswa.create') }}"> Input Mahasiswa</a>
         </div>
@@ -28,6 +35,7 @@
         <th>Nama</th>
         <th>Kelas</th>
         <th>Jurusan</th>
+        <th>Profile</th>
         <th width="280px">Action</th>
     </tr>
     @foreach ($mahasiswa as $mhs)
@@ -36,6 +44,7 @@
         <td>{{ $mhs->nama }}</td>
         <td>{{ $mhs->kelas->nama_kelas }}</td>
         <td>{{ $mhs->jurusan }}</td>
+        <td><img style="width: 80px; height: 80px; overflow: hidden" class="rounded-circle" src="{{ asset('./storage/'. $mhs->photo_profile) }}" alt=""></td>
         <td>
         <form action="{{ route('mahasiswa.destroy',['mahasiswa'=>$mhs->nim]) }}" method="POST">
             <a class="btn btn-info" href="{{ route('mahasiswa.show',$mhs->nim) }}">Show</a>

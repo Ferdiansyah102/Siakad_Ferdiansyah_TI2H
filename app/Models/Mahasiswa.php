@@ -22,6 +22,7 @@ class Mahasiswa extends Model //Definisi Model
         'nama',
         'kelas_id',
         'jurusan',
+        'userfile',
     ];
 
     public function kelas(){
