@@ -21,7 +21,7 @@ class MahasiswaController extends Controller
     {
         //fungsi eloquent menampilkan data menggunakan pagination
         //$mahasiswa = Mahasiswa::all(); // Mengambil semua isi tabel
-        
+
         //yang semula Mahasiswa::all, diubah menjadi with() yang menyatakan relasi
         $mahasiswa = Mahasiswa::with('kelas')->get();
         $mahasiswa = Mahasiswa::with('kelas')->orderBy('id_mahasiswa', 'asc')->paginate(4);
@@ -35,8 +35,8 @@ class MahasiswaController extends Controller
      */
     public function create()
     {
-        $kelas = kelas::all();//mengdapatkan data dari tabel kelas
-        return view('mahasiswa.create',['kelas' => $kelas]);
+        $kelas = kelas::all(); //mengdapatkan data dari tabel kelas
+        return view('mahasiswa.create', ['kelas' => $kelas]);
     }
 
     /**
@@ -49,20 +49,20 @@ class MahasiswaController extends Controller
     {
         //melakukan validasi data
         $request->validate([
-        'Nim' => 'required',
-        'Nama' => 'required',
-        'Kelas' => 'required',
-        'Jurusan' => 'required',
-        'userfile' => 'required',
+            'Nim' => 'required',
+            'Nama' => 'required',
+            'Kelas' => 'required',
+            'Jurusan' => 'required',
+            'userfile' => 'required',
         ]);
 
-        if($request->file('userfile')){
+        if ($request->file('userfile')) {
             $image_name = $request->file('userfile')->store('image', 'public');
         }
 
         $mahasiswa = new Mahasiswa;
         $mahasiswa->nim = $request->get('Nim');
-        $mahasiswa->nama = $request->get('Nama'); 
+        $mahasiswa->nama = $request->get('Nama');
         $mahasiswa->jurusan = $request->get('Jurusan');
         $mahasiswa->photo_profile = $image_name;
         $mahasiswa->save();
@@ -102,9 +102,9 @@ class MahasiswaController extends Controller
         //menampilkan detail data dengan menemukan berdasarkan Nim Mahasiswa untuk diedit
         $Mahasiswa = Mahasiswa::with('kelas')->where('nim', $nim)->first();
         $kelas = kelas::all(); //mendapatkan data dari tabel kelas
-        return view('mahasiswa.edit', compact('Mahasiswa','kelas'));
+        return view('mahasiswa.edit', compact('Mahasiswa', 'kelas'));
     }
-    
+
 
     /**
      * Update the specified resource in storage.
@@ -119,16 +119,16 @@ class MahasiswaController extends Controller
         $request->validate([
             'Nim' => 'required',
             'Nama' => 'required',
-            'Kelas' => 'required',
+            //'Kelas' => 'required',
             'Jurusan' => 'required',
-            'userfile' => 'required',
+            //'userfile' => 'required',
         ]);
 
         $mahasiswa = Mahasiswa::with('kelas')->where('nim', $nim)->first();
         $mahasiswa->nim = $request->get('Nim');
-        $mahasiswa->nama = $request->get('Nama'); 
+        $mahasiswa->nama = $request->get('Nama');
         $mahasiswa->jurusan = $request->get('Jurusan');
-        if($mahasiswa->photo_profile && file_exists(storage_path('./app/public/'. $mahasiswa->photo_profile))){
+        if ($mahasiswa->photo_profile && file_exists(storage_path('./app/public/' . $mahasiswa->photo_profile))) {
             Storage::delete(['./public/', $mahasiswa->photo_profile]);
         }
 
@@ -144,9 +144,8 @@ class MahasiswaController extends Controller
         $mahasiswa->save();
 
         //jika data berhasil diupdate, akan kembali ke halaman utama
-            return redirect()->route('mahasiswa.index')
-                ->with('success', 'Mahasiswa Berhasil Diupdate');
-        
+        return redirect()->route('mahasiswa.index')
+            ->with('success', 'Mahasiswa Berhasil Diupdate');
     }
 
     /**
@@ -160,13 +159,13 @@ class MahasiswaController extends Controller
         //fungsi eloquent untuk menghapus data
         Mahasiswa::where('nim', $nim)->delete();
         return redirect()->route('mahasiswa.index')
-            -> with('success', 'Mahasiswa Berhasil Dihapus');
+            ->with('success', 'Mahasiswa Berhasil Dihapus');
     }
 
     public function page()
     {
         //fungsi eloquent menampilkan data menggunakan pagination
-       $mahasiswa = Mahasiswa::with('kelas')->orderBy('id_mahasiswa', 'asc')->paginate(4);
+        $mahasiswa = Mahasiswa::with('kelas')->orderBy('id_mahasiswa', 'asc')->paginate(4);
         return view('mahasiswa.pagination', compact('mahasiswa'));
     }
 
@@ -174,29 +173,31 @@ class MahasiswaController extends Controller
     {
         //fungsi eloquent menampilkan data menggunakan pagination
         $keyword = $request->search;
-        $mahasiswa = Mahasiswa::where('nim', 'LIKE','%'.$keyword.'%')
-                                ->orWhere('nama', 'LIKE','%'.$keyword.'%')
-                                ->paginate(4);
+        $mahasiswa = Mahasiswa::where('nim', 'LIKE', '%' . $keyword . '%')
+            ->orWhere('nama', 'LIKE', '%' . $keyword . '%')
+            ->paginate(4);
         return view('mahasiswa.pagination', compact('mahasiswa'))->with('i', (request()->input('page', 1) - 1) * 4);
     }
 
-    public function khs($nim){
+    public function khs($nim)
+    {
         $mhs = Mahasiswa::where('nim', $nim)->first();
         $nilai = mahasiswa_matakuliah::where('mahasiswa_id', $mhs->id_mahasiswa)
-                                       ->with('matakuliah')
-                                       ->with('mahasiswa')
-                                       ->get();
+            ->with('matakuliah')
+            ->with('mahasiswa')
+            ->get();
         $nilai->mahasiswa = Mahasiswa::with('kelas')->where('nim', $nim)->first();
 
         return view('mahasiswa.khs', compact('nilai'));
     }
-    public function cetak_pdf($nim){
+    public function cetak_pdf($nim)
+    {
         // dd('tetsing');
         $mhs = Mahasiswa::where('nim', $nim)->first();
         $nilai = Mahasiswa_MataKuliah::where('mahasiswa_id', $mhs->id_mahasiswa)
-                                       ->with('matakuliah')
-                                       ->with('mahasiswa')
-                                       ->get();
+            ->with('matakuliah')
+            ->with('mahasiswa')
+            ->get();
         $nilai->mahasiswa = Mahasiswa::with('kelas')->where('nim', $nim)->first();
         $pdf = PDF::loadview('mahasiswa.nilai_pdf', compact('nilai'));
         return $pdf->stream();
